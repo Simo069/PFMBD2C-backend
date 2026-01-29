@@ -37,10 +37,7 @@ INSTALLED_APPS = [
     'document',
     'chat',
     'core',
-<<<<<<< HEAD
     'dashboard',
-=======
->>>>>>> c1e83bb169a8ddcf9777e866126cb8e577764cb2
 ]
 
 MIDDLEWARE = [
