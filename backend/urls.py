@@ -10,8 +10,11 @@ urlpatterns = [
     path('api/auth/', include('account.urls')),
     path('api/documents/', include('document.urls')),
     path('api/chat/', include('chat.urls')),
+<<<<<<< HEAD
     path('api/dashboard/', include('dashboard.urls')),
 
+=======
+>>>>>>> c1e83bb169a8ddcf9777e866126cb8e577764cb2
 ]
 
 # Serve media files in development

@@ -106,77 +106,20 @@ def delete_chat_session(request, session_id):
 # Endpoints RAG
 # ============================================
 
-
-
-# hadi dial simo
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def ask_question(request):
-#     """
-#     Poser une question en utilisant RAG
-    
-#     Payload attendu:
-#     {
-#         "question": "Qu'est-ce que...",
-#         "session_id": 123,  // optionnel
-#         "pdf_ids": [1, 2],  // optionnel
-#         "top_k": 5          // optionnel, défaut 5
-#     }
-#     """
-#     question = request.data.get('question')
-#     session_id = request.data.get('session_id')
-#     pdf_ids = request.data.get('pdf_ids')
-#     top_k = request.data.get('top_k', 5)
-    
-#     if not question:
-#         return Response(
-#             {'error': 'Question requise'},
-#             status=status.HTTP_400_BAD_REQUEST
-#         )
-    
-#     # Valider la propriété de la session si fournie
-#     if session_id:
-#         try:
-#             ChatSession.objects.get(id=session_id, user=request.user)
-#         except ChatSession.DoesNotExist:
-#             return Response(
-#                 {'error': 'Session non trouvée'},
-#                 status=status.HTTP_404_NOT_FOUND
-#             )
-    
-#     # Valider la propriété des PDFs si fournis
-#     if pdf_ids:
-#         user_pdfs = PDFFile.objects.filter(
-#             id__in=pdf_ids, 
-#             user=request.user,
-#             processing_status='completed'
-#         ).values_list('id', flat=True)
-        
-#         if len(user_pdfs) != len(pdf_ids):
-#             return Response(
-#                 {'error': 'IDs de PDF invalides ou PDFs non prêts'},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-    
-#     # Traiter la question
-#     result = rag_service.ask_question(
-#         user_id=request.user.id,
-#         question=question,
-#         session_id=session_id,
-#         pdf_ids=pdf_ids,
-#         top_k=top_k
-#     )
-    
-#     return Response(result)
-
-
-
-
-
-# test diali pour l'affichage du totale des messages 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def ask_question(request):
+    """
+    Poser une question en utilisant RAG
+    
+    Payload attendu:
+    {
+        "question": "Qu'est-ce que...",
+        "session_id": 123,  // optionnel
+        "pdf_ids": [1, 2],  // optionnel
+        "top_k": 5          // optionnel, défaut 5
+    }
+    """
     question = request.data.get('question')
     session_id = request.data.get('session_id')
     pdf_ids = request.data.get('pdf_ids')
@@ -227,6 +170,47 @@ def ask_question(request):
 
 
 
+    
+    if not question:
+        return Response(
+            {'error': 'Question requise'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Valider la propriété de la session si fournie
+    if session_id:
+        try:
+            ChatSession.objects.get(id=session_id, user=request.user)
+        except ChatSession.DoesNotExist:
+            return Response(
+                {'error': 'Session non trouvée'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+    
+    # Valider la propriété des PDFs si fournis
+    if pdf_ids:
+        user_pdfs = PDFFile.objects.filter(
+            id__in=pdf_ids, 
+            user=request.user,
+            processing_status='completed'
+        ).values_list('id', flat=True)
+        
+        if len(user_pdfs) != len(pdf_ids):
+            return Response(
+                {'error': 'IDs de PDF invalides ou PDFs non prêts'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
+    # Traiter la question
+    result = rag_service.ask_question(
+        user_id=request.user.id,
+        question=question,
+        session_id=session_id,
+        pdf_ids=pdf_ids,
+        top_k=top_k
+    )
+    
+    return Response(result)
 
 
 @api_view(['POST'])
