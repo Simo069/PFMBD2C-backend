@@ -5,9 +5,16 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+import PyPDF2
+
+
+import json
+
+
 from .models import PDFFile, Chunk
 from .tasks import process_pdf_async
-
+from .services.summary_service import SummaryService
 # Taille maximale: 10MB
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
@@ -80,31 +87,100 @@ def upload_pdf(request):
         'status': pdf_file.processing_status,
         'message': 'PDF uploadé avec succès. Traitement démarré.'
     }, status=status.HTTP_201_CREATED)
-
-
+    
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_pdf_status(request, pdf_id):
     """
-    Vérifier le statut de traitement d'un PDF
+    Obtenir le statut d'un PDF spécifique
     """
     try:
-        pdf_file = PDFFile.objects.get(id=pdf_id, user=request.user)
+        pdf = PDFFile.objects.get(id=pdf_id, user=request.user)
+        
+        return Response({
+            'id': pdf.id,
+            'filename': pdf.original_filename,
+            'status': pdf.processing_status,
+            'page_count': pdf.page_count,
+            'total_chunks': pdf.total_chunks,
+            'upload_date': pdf.upload_date,
+            'file_size': pdf.file_size
+        })
+        
     except PDFFile.DoesNotExist:
         return Response(
             {'error': 'PDF non trouvé'},
             status=status.HTTP_404_NOT_FOUND
-        )
-    
-    return Response({
-        'id': pdf_file.id,
-        'filename': pdf_file.original_filename,
-        'status': pdf_file.processing_status,
-        'page_count': pdf_file.page_count,
-        'total_chunks': pdf_file.total_chunks,
-        'upload_date': pdf_file.upload_date
-    })
+        ) 
 
+
+
+        
+
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def summarize_pdf(request, pdf_id):
+    """
+    Génère un résumé d'un PDF et le retourne
+    """
+    try:
+        # Vérifier que le PDF appartient à l'utilisateur
+        pdf = PDFFile.objects.get(id=pdf_id, user=request.user)
+        
+        # Vérifier que le PDF est traité
+        if pdf.processing_status != 'completed':
+            return Response({  # Utiliser Response au lieu de JsonResponse
+                'error': 'Le PDF n\'est pas encore traité',
+                'success': False
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Récupérer les chunks du PDF
+        chunks = Chunk.objects.filter(pdf=pdf).order_by('page_number', 'chunk_index')
+        
+        if not chunks.exists():
+            return Response({  # Utiliser Response
+                'error': 'Aucun contenu trouvé dans le PDF',
+                'success': False
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Combiner le texte des chunks
+        text_content = " ".join([chunk.chunk_text for chunk in chunks])
+        
+        if not text_content.strip():
+            return Response({  # Utiliser Response
+                'error': 'Le PDF ne contient pas de texte extractible',
+                'success': False
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Générer le résumé
+        try:
+            summary_service = SummaryService()
+            summary = summary_service.generate_summary(text_content)
+        except Exception as e:
+            print(f"Erreur dans le service de résumé: {e}")
+            # Fallback: retourner un extrait
+            words = text_content.split()[:150]
+            summary = " ".join(words) + "..."
+        
+        return Response({  # Utiliser Response
+            'summary': summary,
+            'pdf_id': pdf.id,
+            'filename': os.path.basename(pdf.file_path),
+            'success': True
+        })
+        
+    except PDFFile.DoesNotExist:
+        return Response({  # Utiliser Response
+            'error': 'PDF non trouvé',
+            'success': False
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print(f"Erreur générale dans summarize_pdf: {e}")
+        return Response({  # Utiliser Response
+            'error': f'Erreur lors du résumé: {str(e)}',
+            'success': False
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

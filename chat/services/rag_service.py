@@ -1,10 +1,13 @@
 # import google.generativeai as genai
+import os
 from google import genai
 from typing import List, Dict, Optional
 from django.conf import settings
 from document.models import Chunk
 from chat.models import Message, ChatSession
 from document.services.vector_db_service import VectorDBService
+from dotenv import load_dotenv
+load_dotenv() 
 
 class RAGService:
     """
@@ -12,8 +15,10 @@ class RAGService:
     """
     
     def __init__(self):
-        self.client = genai.Client(api_key='AIzaSyDYW-fW8whxic6gE8qSqarP-9J-JqwZRBA')
-        self.model_name = "gemini-2.5-flash"
+        self.client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+        self.model_name = "models/gemini-flash-latest"
+
+
 
         from document.services.embedding_service import get_embedding_service
         self.embedding_service = get_embedding_service()
@@ -289,7 +294,7 @@ JSON de la carte mentale:"""
             # return {"structure": response.text}
             response = self.client.models.generate_content(
                 model=self.model_name,
-                ontents=prompt
+                contents=prompt
             )
             return {"structure": response.text}
         except Exception as e:

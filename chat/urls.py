@@ -12,4 +12,5 @@ urlpatterns = [
     path('ask/', views.ask_question, name='ask_question'),
     path('summary/', views.generate_summary, name='generate_summary'),
     path('mindmap/', views.generate_mindmap, name='generate_mindmap'),
+   
 ]
