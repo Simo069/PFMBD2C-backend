@@ -1,16 +1,23 @@
 import os
 from celery import Celery
 
-# Définir le module de paramètres Django par défaut pour Celery
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+
+"""
+Configuration Celery pour utiliser Redis
+À placer dans votre dossier Django principal (même niveau que settings.py)
+"""
+import os
+from celery import Celery
+
+# Définir le module de paramètres Django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')  # ← IMPORTANT: 'backend.settings'
 
 app = Celery('backend')
 
-# Utiliser une chaîne ici signifie que le worker ne doit pas sérialiser
-# l'objet de configuration à l'enfant.
+# Charger la configuration depuis les paramètres Django
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
-# Charger automatiquement les tâches depuis tous les apps Django enregistrés.
+# Découvrir automatiquement les tâches dans les applications Django
 app.autodiscover_tasks()
 
 @app.task(bind=True)

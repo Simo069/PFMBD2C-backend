@@ -25,6 +25,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
+    'django_celery_results',
     
     # Third party apps
     'rest_framework',
@@ -124,6 +126,8 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
 }
+import os
+print("GEMINI_API_KEY =", os.getenv("GEMINI_API_KEY"))
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
@@ -131,6 +135,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5173",
+    "http://192.168.56.1:3000",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -159,7 +164,8 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 # Celery Configuration
 
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 CELERY_ACCEPT_CONTENT = ['json']
