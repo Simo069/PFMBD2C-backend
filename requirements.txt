@@ -1,0 +1,75 @@
+# Backend essentials
+Django>=4.2,<5.0
+djangorestframework
+djangorestframework_simplejwt
+django-cors-headers
+django_celery_results
+
+# Database
+psycopg2-binary
+python-dotenv
+
+# Celery / Queue
+celery
+amqp
+billiard
+kombu
+
+# AI / ML
+torch
+transformers
+sentence-transformers
+faiss-cpu
+scikit-learn
+scipy
+numpy
+safetensors
+
+# Google APIs
+google-ai-generativelanguage
+google-api-core
+google-api-python-client
+google-auth
+google-auth-httplib2
+google-genai
+googleapis-common-protos
+grpcio
+grpcio-status
+
+# Utilities
+requests
+httpx
+httpcore
+urllib3
+charset-normalizer
+idna
+tqdm
+regex
+python-dateutil
+Jinja2
+MarkupSafe
+PyYAML
+filelock
+fsspec
+packaging
+joblib
+prompt_toolkit
+h11
+huggingface-hub
+mpmath
+networkx
+distro
+tenacity
+threadpoolctl
+typing-inspection
+typing_extensions
+tzdata
+tzlocal
+uritemplate
+websockets
+wcwidth
+exceptiongroup
+PyJWT
+PyPDF2
+pyparsing
+sympy

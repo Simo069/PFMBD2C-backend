@@ -1,0 +1,270 @@
+# .gitignore pour Django
+
+# ========================
+# VARIABLES D'ENVIRONNEMENT
+# ========================
+.env
+.env.*
+!.env.example
+*.env
+
+# ========================
+# PYTHON
+# ========================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# C extensions
+*.c
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# ========================
+# DJANGO
+# ========================
+# SQLite database
+*.sqlite3
+*.sqlite3-journal
+db.sqlite3
+db.sqlite3-journal
+
+# Django stuff:
+*.log
+local_settings.py
+
+# Static files (collectstatic)
+/static/
+/staticfiles/
+/static_root/
+/static_cdn/
+
+# Media files
+/media/
+/mediafiles/
+
+# Migrations (décommentez si vous ne voulez pas versionner les migrations)
+# */migrations/*.py
+# */migrations/*.pyc
+# !*/migrations/__init__.py
+
+# ========================
+# BASES DE DONNÉES
+# ========================
+*.db
+*.sqlite
+*.sqlite3
+
+# PostgreSQL
+*.pgsql
+*.backup
+
+# MySQL
+*.sql
+*.mysql
+
+# ========================
+# ENVIRONNEMENTS VIRTUELS
+# ========================
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+virtualenv/
+.virtualenvs/
+
+# Pipenv
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+# ========================
+# IDEs & EDITORS
+# ========================
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.*.sw[op]
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ========================
+# SYSTÈME D'EXPLOITATION
+# ========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ========================
+# CELERY
+# ========================
+celerybeat-schedule
+celerybeat.pid
+
+# ========================
+# REDIS
+# ========================
+dump.rdb
+
+# ========================
+# LOGS & MONITORING
+# ========================
+*.log
+logs/
+*.log.*
+log/
+
+# ========================
+# BACKUP FILES
+# ========================
+*.bak
+*.backup
+*.old
+*.orig
+*.tmp
+*.temp
+
+# ========================
+# JUPYTER NOTEBOOK
+# ========================
+.ipynb_checkpoints
+*.ipynb
+
+# ========================
+# DOCUMENTATION
+# ========================
+docs/_build/
+site/
+
+# ========================
+# SECRETS & CREDENTIALS
+# ========================
+secrets.json
+credentials.json
+service-account.json
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+
+# ========================
+# NODE (si vous avez du frontend dans le même repo)
+# ========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ========================
+# AUTRES
+# ========================
+# Fichiers compressés
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Fichiers temporaires
+*.tmp
+*.temp
+~$*
+
+# Fichiers de sauvegarde d'éditeur
+*~
+
+# Configuration locale
+local_settings.py
+settings_local.py
