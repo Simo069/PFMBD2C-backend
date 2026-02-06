@@ -217,6 +217,7 @@ class VectorDBService:
             'dimension': self.dimension,
             'index_type': type(index).__name__
         }
+    
 
 
 

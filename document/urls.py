@@ -11,6 +11,7 @@ urlpatterns = [
     # Chunk details
     path('chunks/<int:chunk_id>/', views.get_chunk_details, name='get_chunk_details'),
     path('summarize/<int:pdf_id>/', views.summarize_pdf, name='summarize_pdf'),
+
     
 ]
     
