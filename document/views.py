@@ -14,12 +14,17 @@ import json
 
 from .models import PDFFile, Chunk
 from .tasks import process_pdf_async
+from rest_framework.decorators import parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser
+
+
 from .services.summary_service import SummaryService
 # Taille maximale: 10MB
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser]) 
 def upload_pdf(request):
     """
     Upload d'un fichier PDF
@@ -78,7 +83,7 @@ def upload_pdf(request):
     )
     
     # Déclencher le traitement asynchrone
-    process_pdf_async.delay(pdf_file.id)
+    # process_pdf_async.delay(pdf_file.id)
     
     return Response({
         'id': pdf_file.id,

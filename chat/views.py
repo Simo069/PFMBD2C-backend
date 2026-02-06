@@ -124,6 +124,52 @@ def ask_question(request):
     session_id = request.data.get('session_id')
     pdf_ids = request.data.get('pdf_ids')
     top_k = request.data.get('top_k', 5)
+
+    if not question:
+        return Response({'error': 'Question requise'}, status=400)
+
+    # récupérer la session
+    if session_id:
+        session = ChatSession.objects.get(id=session_id, user=request.user)
+    else:
+        session = ChatSession.objects.create(
+            user=request.user,
+            title="Nouvelle session",
+            pdf_ids=pdf_ids or []
+        )
+
+    Message.objects.create(
+        user=request.user,
+        session=session,
+        role="user",
+        content=question
+    )
+
+    result = rag_service.ask_question(
+        user_id=request.user.id,
+        question=question,
+        session_id=session.id,
+        pdf_ids=pdf_ids,
+        top_k=top_k
+    )
+
+    Message.objects.create(
+        user=request.user,
+        session=session,
+        role="assistant",
+        content=result.get("answer", ""),
+        chunk_ids=result.get("chunk_ids", [])
+    )
+
+    return Response({
+        "session_id": session.id,
+        "answer": result.get("answer"),
+        "sources": result.get("sources", [])
+    })
+
+
+
+
     
     if not question:
         return Response(
@@ -253,3 +299,27 @@ def generate_mindmap(request):
         'filename': pdf.original_filename,
         'mindmap': mindmap
     })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

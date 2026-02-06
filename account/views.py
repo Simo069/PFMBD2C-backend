@@ -5,7 +5,15 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.hashers import check_password
 from .models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -122,6 +130,7 @@ def profile(request):
         'email': user.email,
         'full_name': user.full_name,
         'created_at': user.created_at,
+        'updated_at': user.updated_at,
         'preferences': {
             'chunk_size': user.chunk_size,
             'chunk_overlap': user.chunk_overlap,
@@ -140,6 +149,15 @@ def update_profile(request):
     user = request.user
     
     # Mettre à jour les champs
+    if 'username' in request.data:
+       username = request.data['username']
+       if User.objects.filter(username=username).exclude(id=user.id).exists():
+          return Response(
+              {'error': 'Ce nom d’utilisateur est déjà utilisé'},
+              status=status.HTTP_400_BAD_REQUEST
+          )
+       user.username = username
+
     if 'full_name' in request.data:
         user.full_name = request.data['full_name']
     
@@ -171,6 +189,98 @@ def update_profile(request):
             'full_name': user.full_name,
         }
     })
+
+
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    """
+    Changer le mot de passe si l'utilisateur connaît son mot de passe actuel
+    """
+    user = request.user
+    current_password = request.data.get('current_password')
+    new_password = request.data.get('new_password')
+    confirm_password = request.data.get('confirm_password')
+
+    if not check_password(current_password, user.password):
+        return Response({'error': 'Mot de passe actuel incorrect'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if new_password != confirm_password:
+        return Response({'error': 'Les mots de passe ne correspondent pas'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(new_password) < 8:
+        return Response({'error': 'Le mot de passe doit contenir au moins 8 caractères'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    user.set_password(new_password)
+    user.save()
+    
+    update_session_auth_hash(request, user)
+
+    return Response({'message': 'Mot de passe changé avec succès'})
+
+
+@api_view(['PUT'])
+@permission_classes([AllowAny])
+def request_password_reset(request):
+    email = request.data.get('email')
+
+    if not email:
+        return Response({'error': 'Email requis'}, status=400)
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({'message': 'Si cet email existe, un lien a été envoyé.'})
+
+    token = default_token_generator.make_token(user)
+    uid = user.pk
+
+    reset_url = f"http://localhost:3000/reset-password/{uid}/{token}"
+
+    subject = "Réinitialisation de votre mot de passe"
+    html_message = render_to_string("emails/reset_password.html", {"reset_url": reset_url, "user": user})
+    plain_message = strip_tags(html_message)
+
+    send_mail(
+       subject,
+       plain_message,
+       "noreply@tonapp.com",
+       [email],
+       html_message=html_message,
+    )
+
+    return Response({'message': 'Si cet email existe, un lien a été envoyé.'})
+
+
+@api_view(['PUT'])
+@permission_classes([AllowAny])
+def reset_password(request, uid, token):
+    new_password = request.data.get('new_password')
+    confirm_password = request.data.get('confirm_password')
+
+    if not new_password or not confirm_password:
+        return Response({'error': 'Tous les champs sont requis'}, status=400)
+
+    if new_password != confirm_password:
+        return Response({'error': 'Les mots de passe ne correspondent pas'}, status=400)
+
+    if len(new_password) < 8:
+        return Response({'error': 'Mot de passe trop court'}, status=400)
+
+    try:
+        user = User.objects.get(pk=uid)
+    except User.DoesNotExist:
+        return Response({'error': 'Utilisateur invalide'}, status=400)
+
+    if not default_token_generator.check_token(user, token):
+        return Response({'error': 'Token invalide ou expiré'}, status=400)
+
+    user.set_password(new_password)
+    user.save()
+
+    return Response({'message': 'Mot de passe réinitialisé avec succès'})
 
 
 from django.utils import timezone
