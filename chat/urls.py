@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     # Sessions de chat
     path('sessions/create/', views.create_chat_session, name='create_session'),
+    path('sessions/<int:session_id>/update-title/', views.update_session_title, name='update_session_title'),
     path('sessions/', views.list_chat_sessions, name='list_sessions'),
     path('sessions/<int:session_id>/', views.get_chat_history, name='get_chat_history'),
     path('sessions/<int:session_id>/delete/', views.delete_chat_session, name='delete_session'),
@@ -12,5 +13,9 @@ urlpatterns = [
     path('ask/', views.ask_question, name='ask_question'),
     path('summary/', views.generate_summary, name='generate_summary'),
     path('mindmap/', views.generate_mindmap, name='generate_mindmap'),
+
+    # Recherche de conversations
+    path('search/', views.search_conversations, name='search_conversations'),
+    path('search-conversations/', views.search_conversations_fulltext, name='search_conversations_fulltext'),
    
 ]

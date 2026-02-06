@@ -142,6 +142,8 @@ poetry.lock
 *.sublime-project
 *.sublime-workspace
 
+.vs 
+
 # Vim
 *.swp
 *.swo
