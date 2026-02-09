@@ -1,4 +1,3 @@
-# import google.generativeai as genai
 import os
 from google import genai
 from typing import List, Dict, Optional
@@ -82,8 +81,6 @@ class RAGService:
         
         # Étape 5: Générer la réponse avec Gemini
         try:
-            # response = self.model.generate_content(prompt)
-            # answer = response.text
             response = self.client.models.generate_content(
                 model=self.model_name,
                 contents=prompt
@@ -162,7 +159,7 @@ Réponse:"""
                 'pdf_id': chunk.pdf.id,
                 'pdf_filename': chunk.pdf.original_filename,
                 'page_number': chunk.page_number,
-                'chunk_text': chunk.chunk_text[:200] + "...",  # Aperçu
+                'chunk_text': chunk.chunk_text[:200] + "...",  
                 'chunk_id': chunk.id
             })
         
@@ -199,7 +196,7 @@ Réponse:"""
         # Mettre à jour l'horodatage de la session
         try:
             session = ChatSession.objects.get(id=session_id)
-            session.save()  # Cela met à jour le champ updated_at
+            session.save()  
         except ChatSession.DoesNotExist:
             pass
     
@@ -222,7 +219,7 @@ Réponse:"""
         
         # Combiner les chunks (limiter pour éviter les limites de tokens)
         combined_text = ""
-        for chunk in chunks[:20]:  # Limiter aux 20 premiers chunks
+        for chunk in chunks[:20]:  
             combined_text += chunk.chunk_text + "\n\n"
         
         # Générer le résumé
@@ -233,8 +230,6 @@ Réponse:"""
 Résumé:"""
         
         try:
-            # response = self.model.generate_content(prompt)
-            # return response.text
             response = self.client.models.generate_content(
                 model=self.model_name,
                 contents=prompt
@@ -290,8 +285,6 @@ Veuillez fournir la carte mentale au format JSON suivant:
 JSON de la carte mentale:"""
         
         try:
-            # response = self.model.generate_content(prompt)
-            # return {"structure": response.text}
             response = self.client.models.generate_content(
                 model=self.model_name,
                 contents=prompt

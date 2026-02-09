@@ -60,10 +60,8 @@ class PDFProcessor:
         # Supprimer les espaces multiples
         text = re.sub(r'\s+', ' ', text)
         
-        # Supprimer les sauts de ligne multiples
         text = re.sub(r'\n+', '\n', text)
         
-        # Supprimer les espaces en début et fin
         text = text.strip()
         
         return text
@@ -156,7 +154,7 @@ class PDFProcessor:
         for page_num, (start, end) in page_char_ranges.items():
             if start <= position < end:
                 return page_num
-        return list(page_char_ranges.keys())[-1]  # Par défaut, dernière page
+        return list(page_char_ranges.keys())[-1]  
     
     def _estimate_tokens(self, text: str) -> int:
         """

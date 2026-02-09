@@ -66,7 +66,7 @@ class DashboardStatsService:
 
       
         today = timezone.now().date()
-        week_ago = today - timedelta(days=6)  # 6 jours + aujourd'hui = 7 jours
+        week_ago = today - timedelta(days=6)  
         
         messages_by_day = (
             Message.objects
@@ -90,7 +90,6 @@ class DashboardStatsService:
         messages_dict = {item['day']: item['count'] for item in messages_by_day}
         sessions_dict = {item['day']: item['count'] for item in sessions_by_day}
         
-        # Construire la liste des 7 derniers jours
         daily_activity = []
         day_names = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
         

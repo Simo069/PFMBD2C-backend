@@ -75,7 +75,6 @@ def list_chat_sessions(request):
     
     sessions_data = []
     for session in sessions:
-        # Récupérer les noms des PDFs
         pdf_names = []
         for pdf_id in session.pdf_ids:
             try:
@@ -163,19 +162,15 @@ def ask_question(request):
     if not question:
         return Response({'error': 'Question requise'}, status=400)
 
-    # récupérer la session
     if session_id:
         session = ChatSession.objects.get(id=session_id, user=request.user)
-        # Vérifier si c'est la première question de la session
         if session.messages.count() == 0:
-            # Mettre à jour le titre avec la première question
             title = question[:50]
             if len(question) > 50:
                 title = title[:47] + "..."
             session.title = title
             session.save()
     else:
-        # Créer une nouvelle session avec la première question comme titre
         title = question[:50]
         if len(question) > 50:
             title = title[:47] + "..."
@@ -234,7 +229,6 @@ def generate_summary(request):
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    # Vérifier la propriété du PDF
     try:
         pdf = PDFFile.objects.get(id=pdf_id, user=request.user)
     except PDFFile.DoesNotExist:
@@ -277,7 +271,6 @@ def generate_mindmap(request):
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    # Vérifier la propriété du PDF
     try:
         pdf = PDFFile.objects.get(id=pdf_id, user=request.user)
     except PDFFile.DoesNotExist:
@@ -441,7 +434,6 @@ def search_conversations_fulltext(request):
     # Trier par date de mise à jour (les plus récentes d'abord)
     results.sort(key=lambda x: x['updated_at'], reverse=True)
     
-    # Limiter le nombre de résultats
     results = results[:top_k]
 
     return Response({
